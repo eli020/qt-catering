@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QT Catering - World-Class Catering Services</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo-container">
+            <img src="images/logo.png" alt="QT Catering Logo" class="logo">
+        </div>
+        <ul class="nav-links">
+            <li><a href="#services">Services</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO BANNER -->
+<header class="hero">
+    <div class="hero-content">
+        <h1>Beyond Dining. Beyond Luxury</h1>
+        <p>Culinary Creativity, Skillful Presentation</p>
+        <a href="#services" class="cta-btn">Explore Services</a>
+    </div>
+</header>
+
+<!-- ABOUT SECTION -->
+<section id="about" class="about">
+    <h2>Catering Services</h2>
+    <div class="about-content">
+        <p>
+            At our core, our dedication drives us to bring you world-class catering services, driven by our passion for culinary excellence. We guarantee top-tier food quality, led by skilled chefs, supported by a proficient dining crew, and facilitated by well-equipped kitchens.
+        </p>
+        <p>
+            From hospitality and industrial catering to institutional and major event services, including banquets and luncheons, we excel in every aspect. Our commitment ensures that you embark on an exceptional dining journey with us.
+        </p>
+    </div>
+</section>
+
+<!-- SERVICES SECTION -->
+<section id="services" class="services">
+    <h2>Our Services</h2>
+    <div class="services-grid">
+        <div class="service-card">
+            <h3>Banquets & Luncheons</h3>
+            <p>Elegant events tailored to your specifications with professional staff and exceptional cuisine.</p>
+        </div>
+        <div class="service-card">
+            <h3>Corporate Catering</h3>
+            <p>Professional catering solutions for corporate events, meetings, and conferences.</p>
+        </div>
+        <div class="service-card">
+            <h3>Private Events</h3>
+            <p>Customized catering for weddings, celebrations, and private gatherings.</p>
+        </div>
+        <div class="service-card">
+            <h3>Institutional Services</h3>
+            <p>Reliable catering solutions for schools, hospitals, and institutional clients.</p>
+        </div>
+    </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="gallery">
+    <h2>Gallery</h2>
+    <div class="carousel-container">
+        <button class="carousel-btn carousel-prev" onclick="scrollCarousel(-1)">&#10094;</button>
+        <div class="carousel-wrapper">
+            <div class="gallery-images" id="galleryImages">
+                <img src="images/photo1.png" alt="Catering photo 1" onclick="openModal(this)">
+                <img src="images/photo2.png" alt="Catering photo 2" onclick="openModal(this)">
+                <img src="images/photo3.png" alt="Catering photo 3" onclick="openModal(this)">
+                <img src="images/photo4.png" alt="Catering photo 4" onclick="openModal(this)">
+                <img src="images/photo5.png" alt="Catering photo 5" onclick="openModal(this)">
+            </div>
+        </div>
+        <button class="carousel-btn carousel-next" onclick="scrollCarousel(1)">&#10095;</button>
+    </div>
+    
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <button class="modal-btn modal-prev" onclick="event.stopPropagation(); previousImage()">&#10094;</button>
+        <img id="modalImage" src="" alt="Enlarged photo" onclick="event.stopPropagation()">
+        <button class="modal-btn modal-next" onclick="event.stopPropagation(); nextImage()">&#10095;</button>
+        <div class="modal-counter" id="modalCounter"></div>
+    </div>
+</section>
+
+<script>
+let currentImageIndex = 0;
+let allImages = [];
+let touchStartX = 0;
+
+function scrollCarousel(direction) {
+    const gallery = document.getElementById('galleryImages');
+    const imageWidth = gallery.querySelector('img').offsetWidth + 20; // image width + gap
+    gallery.scrollBy({
+        left: direction * imageWidth * 2,
+        behavior: 'smooth'
+    });
+}
+
+function openModal(img) {
+    const modal = document.getElementById('imageModal');
+    allImages = Array.from(document.querySelectorAll('#galleryImages img'));
+    currentImageIndex = allImages.indexOf(img);
+    updateModalImage();
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Add touch listeners
+    modal.addEventListener('touchstart', handleTouchStart, false);
+    modal.addEventListener('touchend', handleTouchEnd, false);
+}
+
+function closeModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    modal.removeEventListener('touchstart', handleTouchStart);
+    modal.removeEventListener('touchend', handleTouchEnd);
+}
+
+function updateModalImage() {
+    const modalImg = document.getElementById('modalImage');
+    const counter = document.getElementById('modalCounter');
+    if (allImages.length > 0) {
+        modalImg.src = allImages[currentImageIndex].src;
+        counter.textContent = (currentImageIndex + 1) + ' / ' + allImages.length;
+    }
+}
+
+function nextImage() {
+    if (currentImageIndex < allImages.length - 1) {
+        currentImageIndex++;
+        updateModalImage();
+    }
+}
+
+function previousImage() {
+    if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updateModalImage();
+    }
+}
+
+function handleTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+}
+
+function handleTouchEnd(e) {
+    if (!touchStartX) return;
+    
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    
+    // Swipe left - show next image
+    if (diff > 50) {
+        nextImage();
+    }
+    
+    // Swipe right - show previous image
+    if (diff < -50) {
+        previousImage();
+    }
+    
+    touchStartX = 0;
+}
+
+// Close modal when pressing Escape key or arrow keys
+document.addEventListener('keydown', function(event) {
+    const modal = document.getElementById('imageModal');
+    if (modal.style.display === 'flex') {
+        if (event.key === 'Escape') {
+            closeModal();
+        } else if (event.key === 'ArrowLeft') {
+            previousImage();
+        } else if (event.key === 'ArrowRight') {
+            nextImage();
+        }
+    }
+});
+</script>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+    <h2>Got Questions?</h2>
+    <p>Reach out to us, and we'll ensure you get the help you need.</p>
+    <a href="#contact" class="cta-btn-secondary">Learn More</a>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact">
+    <div class="contact-container">
+        <div class="contact-info">
+            <h2>Contact Us</h2>
+            <div class="info-block">
+                <h3>Address</h3>
+                <p>Yarmouk Swimming Pool Street, Baghdad, Baghdad Governorate</p>
+            </div>
+            <div class="info-block">
+                <h3>Phone</h3>
+                <p><a href="tel:+9647506913675">+964 750 691 3675</a></p>
+            </div>
+            <div class="info-block">
+                <h3>Email</h3>
+                <p><a href="mailto:info@qtcatering.net">info@qtcatering.net</a></p>
+            </div>
+        </div>
+        <div class="contact-map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d833.6833193855845!2d44.353363969532076!3d33.29964021925076!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15577f0077e16e97%3A0x57fe922dc03110cb!2sQT%20RESTO%20%7C%20LOUNGE!5e0!3m2!1sen!2siq!4v1770554658521!5m2!1sen!2siq" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Information</h4>
+            <ul>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">News</a></li>
+                <li><a href="#">Events</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>Follow Us</h4>
+            <ul>
+                <li><a href="https://www.instagram.com/qtrest.iq/?hl=en">Instagram</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 QT Catering Services. All rights reserved.</p>
+    </div>
+</footer>
+
+</body>
+</html>
